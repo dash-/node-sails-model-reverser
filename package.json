@@ -1,0 +1,29 @@
+{
+  "name": "node-sails-model-reverser",
+  "version": "0.0.1",
+  "description": "Produces static Sails / Waterline models by reverse engineering existing databases",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dash-/node-sails-model-reverser.git"
+  },
+  "keywords": [
+    "sails",
+    "waterline",
+    "model",
+    "reverse engineer"
+  ],
+  "author": "David Ash",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dash-/node-sails-model-reverser/issues"
+  },
+  "homepage": "https://github.com/dash-/node-sails-model-reverser#readme",
+  "dependencies": {
+    "lodash": "^4.5.1",
+    "waterline": "^0.11.0"
+  }
+}
