@@ -1,20 +1,39 @@
+"use strict";
 
+
+///
+// Dependencies
+///
+
+var Promise = require('bluebird');
+var fs = Promise.promisifyAll(require('fs'));
+var path = require('path');
 var _ = require('lodash');
 var Waterline = require('waterline');
+
+var log = (process.env.LOG_REVERSER === 'true') ? console.log : function () {};
+
+
+///
+// Setup
+///
+
+var template = _.template(fs.readFileSync('./model.template.ejs'));
+
+var defaultOptions = {
+	outputPath: path.join(__dirname, 'generated')
+};
 
 
 ///
 // Constructor
 ///
 
-function Reverser(adapter, tables, options) {
-	if(_.isString(tables)) tables = [tables];
-	_.isArray(tables) || (tables = []);
-	_.isObject(options) || (options = {});
-
-	this.tables = tables;
-	this.adapter = adapter;
-	this.options = options;
+function Reverser(adapter, connection, tables, options) {
+	_.isNil(adapter) || this.setAdapter(adapter);
+	_.isNil(connection) || this.setConnection(connection);
+	_.isNil(tables) || this.setTables(tables);
+	_.isNil(options) || this.setOptions(options);
 }
 
 
@@ -26,10 +45,22 @@ Reverser.prototype.setAdapter = function(adapter) {
 	this.adapter = adapter;
 };
 
+Reverser.prototype.setConnection = function(connection) {
+	if(! _.isObject(connection)) {
+		throw new Error(
+			'Connection parameter should be an object, not:', connection
+		);
+	}
+
+	this.connection = connection;
+};
+
 Reverser.prototype.setTables = function(tables) {
 	if(_.isString(tables)) tables = [tables];
 	if(! _.isArray(tables)) {
-		throw new Error('Tables parameter should be a string or array, not:', tables);
+		throw new Error(
+			'Tables parameter should be a string or array, not:', tables
+		);
 	}
 
 	this.tables = tables;
@@ -40,44 +71,131 @@ Reverser.prototype.setOptions = function(options) {
 		throw new Error('Options parameter should be an object, not:', options);
 	}
 
-	this.options = options;
+	this.options = _.defaults(options, defaultOptions);
 };
+
+
+///
+// Primary public methods
+///
 
 Reverser.prototype.reverse = function() {
+	log('reverse()', this.connection, this.tables, this.options);
+
 	var self = this;
+	var wlConfig = waterlineConfig(self.adapter, self.connection);
+	var orm = new Waterline();
 
 	_.forEach(self.tables, function(table) {
-		reverseTable(self.adapter, table, self.options);
+		orm.loadCollection(waterlineModel(table));
+	});
+
+	return new Promise((resolve, reject) => {
+		try {
+			orm.initialize(wlConfig, (err, models) => {
+				if(err) {
+					return reject(err);
+				}
+
+				var promises = [];
+
+				_.forEach(models.collections, (model, identity) => {
+					var table = model.adapter.collection;
+					Promise.promisifyAll(model);
+
+					promises.push(model.describeAsync().then(schema => {
+						writeSchema(schema, identity, table, self.options);
+					}));
+				});
+
+				Promise.all(promises).then(() => {
+					resolve();
+				}).catch(err => {
+					reject(err);
+				});
+			});
+
+		} catch(err) {
+			reject(err);
+		}
 	});
 };
 
-function reverseTable(adapter, table, options) {
-	var Model = waterlineModel(table);
-	new Model({adapters: {defaultAdapter: adapter}}, function(err, model) {
-		if(err) {
-			return handleErrors(err);
-		}
-		model.describe().then(schema => {
-			writeSchema(schema, table, options);
-		}).catch(handleErrors);
-	});
-}
+
+///
+// Private static methods / helpers
+///
 
 function waterlineModel(table) {
-	return Waterline.Collection.extend({
+	var Model = Waterline.Collection.extend({
+		identity: table,
 		tableName: table,
-		adapter: 'defaultAdapter',
+		connection: 'default',
 		attributes: {}
 	});
+
+	return Model;
 }
 
+function waterlineConfig(adapter, connection) {
+	return {
+		adapters: {
+			'default': adapter,
+		},
+
+		connections: {
+			'default': _.extend({}, connection, {
+				adapter: 'default',
+			}),
+		},
+
+		defaults: {
+			migrate: 'safe'
+		}
+	};
+}
 
 function handleErrors(err) {
 	console.error(err.stack);
 }
 
-function writeSchema(schema, table, options) {
-	console.log(table, schema);
+function writeSchema(schema, identity, table, options) {
+	if(_.isUndefined(schema)) {
+		return;
+	}
+
+	identity = identity.charAt(0).toUpperCase() + identity.slice(1);
+
+	var code = template({
+		schema: schema,
+		identity: identity,
+		table: table,
+		options: options,
+		attrFormat: attrFormat,
+		_: _
+	});
+
+	var file = path.join(options.outputPath, identity + '.js');
+	return fs.writeFileAsync(file, code);
 }
 
+function attrFormat(attr) {
+	if(_.isNull(attr)) {
+		return 'null';
+	}
+	if(_.isString(attr)) {
+		return "'" + attr + "'";
+	}
+	if(_.isObject(attr)) {
+		return JSON.stringify(attr);
+	}
+	return attr.toString();
+}
+
+
+///
+// Exports
+///
+
 module.exports = Reverser;
+

@@ -4,7 +4,7 @@
   "description": "Produces static Sails / Waterline models by reverse engineering existing databases",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/test.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,12 @@
   },
   "homepage": "https://github.com/dash-/node-sails-model-reverser#readme",
   "dependencies": {
+    "bluebird": "^3.3.3",
+    "guid": "0.0.12",
     "lodash": "^4.5.1",
     "waterline": "^0.11.0"
+  },
+  "devDependencies": {
+    "sails-derby": "^0.11.9"
   }
 }

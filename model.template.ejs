@@ -1,0 +1,17 @@
+/**
+* <%= identity %>.js
+*
+* @description :: TODO: You might write a short summary of how this model works and what it represents here.
+* @docs        :: http://sailsjs.org/#!documentation/models
+*/
+
+module.exports = {
+  identity: '<%= identity %>',
+  tableName: '<%= table %>',
+  
+  attributes:{
+<% for(var fieldName in schema) { %><% var field = schema[fieldName]; %>    '<%= fieldName %>': {
+<% for(var attrName in field) { %><% var attr = field[attrName]; %>      <%= attrName %>: <%= attrFormat(attr) %>,
+<% } %>    },
+<% } %>  }
+};
