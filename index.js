@@ -92,6 +92,18 @@ Reverser.prototype.reverse = function() {
 		orm.loadCollection(waterlineModel(table));
 	});
 
+	function reverseNext(models, idx) {
+		if(_.isUndefined(idx)) idx = 0;
+		if(_.isUndefined(models[idx])) return Promise.resolve();
+
+		var model = models[idx];
+
+		return model.model.describeAsync().then(schema => {
+			writeSchema(schema, model.identity, model.table, self.options);
+			return reverseNext(models, idx + 1);
+		});
+	}
+
 	return new Promise((resolve, reject) => {
 		try {
 			orm.initialize(wlConfig, (err, models) => {
@@ -99,18 +111,19 @@ Reverser.prototype.reverse = function() {
 					return reject(err);
 				}
 
-				var promises = [];
+				var allModels = [];
 
 				_.forEach(models.collections, (model, identity) => {
-					var table = model.adapter.collection;
 					Promise.promisifyAll(model);
 
-					promises.push(model.describeAsync().then(schema => {
-						writeSchema(schema, identity, table, self.options);
-					}));
+					allModels.push({
+						table: model.adapter.collection,
+						identity: identity,
+						model: model
+					});
 				});
 
-				Promise.all(promises).then(() => {
+				reverseNext(allModels).then(() => {
 					resolve();
 				}).catch(err => {
 					reject(err);
