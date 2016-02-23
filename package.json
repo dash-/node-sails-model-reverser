@@ -1,6 +1,6 @@
 {
   "name": "node-sails-model-reverser",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Produces static Sails / Waterline models by reverse engineering existing databases",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,10 @@
     "sails",
     "waterline",
     "model",
-    "reverse engineer"
+    "reverse engineer",
+    "sails reverse engineer",
+    "waterline reverse engineer",
+    "waterline generator"
   ],
   "author": "David Ash",
   "license": "MIT",
