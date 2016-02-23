@@ -18,7 +18,9 @@ var log = (process.env.LOG_REVERSER === 'true') ? console.log : function () {};
 // Setup
 ///
 
-var template = _.template(fs.readFileSync('./model.template.ejs'));
+var template = _.template(fs.readFileSync(path.join(
+	__dirname, 'model.template.ejs'
+)));
 
 var defaultOptions = {
 	outputPath: path.join(__dirname, 'generated')
