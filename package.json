@@ -1,5 +1,5 @@
 {
-  "name": "node-sails-model-reverser",
+  "name": "sails-model-reverser",
   "version": "1.0.0",
   "description": "Produces static Sails / Waterline models by reverse engineering existing databases",
   "main": "index.js",
