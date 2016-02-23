@@ -7,4 +7,5 @@ ssl
 .idea
 nbproject
 npm-debug.log
+generated/*
 *.swp
