@@ -30,17 +30,17 @@ var Reverser = require('sails-model-reverser');
 var adapter = require('sails-derby');
 
 var connection = {
-	url: 'jdbc:derby://localhost:1527/TESTDB',
-	minpoolsize: 10,
-	maxpoolsize: 100,
+  url: 'jdbc:derby://localhost:1527/TESTDB',
+  minpoolsize: 10,
+  maxpoolsize: 100,
 };
 
 var tables = [
-	'TESTTABLE',
+  'TESTTABLE',
 ];
 
 var options = {
-	outputPath: '/path/for/output',
+  outputPath: '/path/for/output',
 };
 
 var reverser = new Reverser(adapter, connection, tables, options);
