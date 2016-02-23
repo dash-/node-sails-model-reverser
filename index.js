@@ -194,9 +194,12 @@ function writeSchema(schema, identity, table, options) {
 	return fs.writeFileAsync(file, code);
 }
 
-function attrFormat(attr) {
+function attrFormat(attr, attrName) {
 	if(_.isNull(attr)) {
 		return 'null';
+	}
+	if(attrName === 'defaultsTo') {
+		return attr;
 	}
 	if(_.isString(attr)) {
 		return "'" + attr + "'";

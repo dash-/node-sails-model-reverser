@@ -11,7 +11,7 @@ module.exports = {
   
   attributes:{
 <% for(var fieldName in schema) { %><% var field = schema[fieldName]; %>    '<%= fieldName %>': {
-<% for(var attrName in field) { %><% var attr = field[attrName]; %>      <%= attrName %>: <%= attrFormat(attr) %>,
+<% for(var attrName in field) { %><% var attr = field[attrName]; %>      <%= attrName %>: <%= attrFormat(attr, attrName) %>,
 <% } %>    },
 <% } %>  }
 };
