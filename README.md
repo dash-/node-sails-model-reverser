@@ -17,11 +17,18 @@ $ npm install --save sails-model-reverser
 
 An example follows which uses the Apache Derby adapter (sails-derby) to
 reverse engineer and create models for the TESTTABLE table of the TESTDB
-database (running on the standard port of localhost).  Each model is written
-to a single file and are placed in the path specified by options.outputPath
-(/path/for/output in the example below).  If no output path is specified,the
-files will be placed in the `generated` sub-directory of this module (so,
-probably `node_modules/sails-model-reverser/generated`).
+database (running on the standard port of localhost).
+
+Each model is written to a single file and are placed in the path specified
+by `options.outputPath` (`/path/for/output` in the example below).  If no
+output path is specified, the files will be placed in the `generated`
+sub-directory of this module (so, probably
+`node_modules/sails-model-reverser/generated`).
+
+Each model is generated to use the connection specified by
+`options.connectionName` (`myConnection` in the example below).  If no
+connection name is specified, the default connection name, `default`, will
+be used.
 
 At the time of this writing, sails-derby is the only tested adapter.
 
@@ -41,6 +48,7 @@ var tables = [
 
 var options = {
   outputPath: '/path/for/output',
+  connectionName: 'myConnection',
 };
 
 var reverser = new Reverser(adapter, connection, tables, options);

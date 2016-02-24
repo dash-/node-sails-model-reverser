@@ -28,6 +28,7 @@ var tables = [
 ];
 
 var options = {
+	connectionName: 'testConnection'
 };
 
 

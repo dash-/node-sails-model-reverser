@@ -23,7 +23,8 @@ var template = _.template(fs.readFileSync(path.join(
 )));
 
 var defaultOptions = {
-	outputPath: path.join(__dirname, 'generated')
+	outputPath: path.join(__dirname, 'generated'),
+	connectionName: 'default',
 };
 
 
