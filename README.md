@@ -19,7 +19,7 @@ An example follows which uses the Apache Derby adapter (sails-derby) to
 reverse engineer and create models for the TESTTABLE table of the TESTDB
 database (running on the standard port of localhost).
 
-Each model is written to a single file and are placed in the path specified
+Each model is written to a single file and is placed in the path specified
 by `options.outputPath` (`/path/for/output` in the example below).  If no
 output path is specified, the files will be placed in the `generated`
 sub-directory of this module (so, probably

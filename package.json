@@ -1,6 +1,6 @@
 {
   "name": "sails-model-reverser",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Produces static Sails / Waterline models by reverse engineering existing databases",
   "main": "index.js",
   "scripts": {
